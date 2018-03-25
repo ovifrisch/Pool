@@ -2,11 +2,17 @@ var vertexShaderText =
 [
 	'precision mediump float;',
 	'',
-	'attribute vec2 vertPosition;',
+	'attribute vec3 vertPosition;',
+	'attribute vec3 vertColor;',
+	'varying vec3 fragColor;',
+	'uniform mat4 mWorld;',
+	'uniform mat4 mView;',
+	'uniform mat4 mProj;',
 	'',
 	'void main()',
 	'{',
-	'	gl_Position = vec4(vertPosition, 0.0, 1.0);',
+	'	fragColor = vertColor;',
+	'	gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);',
 	'}'
 ].join('\n');
 
@@ -14,9 +20,10 @@ var fragmentShaderText =
 [
 'precision mediump float;',
 '',
+'varying vec3 fragColor;',
 'void main()',
 '{',
-'	gl_FragColor = vec4(0, 1.0, 1.0, 1.0);',
+'	gl_FragColor = vec4(fragColor, 1.0);',
 '}'
 ].join('\n');
 
@@ -33,53 +40,167 @@ function main() {
 	}
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+	gl.frontFace(gl.CCW);
+	gl.cullFace(gl.BACK);
 
 	var program = initShaderProgram(gl, vertexShaderText, fragmentShaderText);
 
 
 	//generate circle triangle indices
-	var circleVertices = [];
-	for (var i = 0.0; i < 360; i+=1) {
-		next_i = i + 1;
-		if (i == 359) {
-			next_i = 0;
-		}
+	var boxVertices = 
+	[ // X, Y, Z           R, G, B
+		// Top
+		-1.0, 1.0, -1.0,   0.5, 0.5, 0.5,
+		-1.0, 1.0, 1.0,    0.5, 0.5, 0.5,
+		1.0, 1.0, 1.0,     0.5, 0.5, 0.5,
+		1.0, 1.0, -1.0,    0.5, 0.5, 0.5,
 
-		var radian_1 = i * Math.PI / 180;
-		var radian_2 = next_i * Math.PI / 180;
+		// Left
+		-1.0, 1.0, 1.0,    0.75, 0.25, 0.5,
+		-1.0, -1.0, 1.0,   0.75, 0.25, 0.5,
+		-1.0, -1.0, -1.0,  0.75, 0.25, 0.5,
+		-1.0, 1.0, -1.0,   0.75, 0.25, 0.5,
+
+		// Right
+		1.0, 1.0, 1.0,    0.25, 0.25, 0.75,
+		1.0, -1.0, 1.0,   0.25, 0.25, 0.75,
+		1.0, -1.0, -1.0,  0.25, 0.25, 0.75,
+		1.0, 1.0, -1.0,   0.25, 0.25, 0.75,
+
+		// Front
+		1.0, 1.0, 1.0,    1.0, 0.0, 0.15,
+		1.0, -1.0, 1.0,    1.0, 0.0, 0.15,
+		-1.0, -1.0, 1.0,    1.0, 0.0, 0.15,
+		-1.0, 1.0, 1.0,    1.0, 0.0, 0.15,
+
+		// Back
+		1.0, 1.0, -1.0,    0.0, 1.0, 0.15,
+		1.0, -1.0, -1.0,    0.0, 1.0, 0.15,
+		-1.0, -1.0, -1.0,    0.0, 1.0, 0.15,
+		-1.0, 1.0, -1.0,    0.0, 1.0, 0.15,
+
+		// Bottom
+		-1.0, -1.0, -1.0,   0.5, 0.5, 1.0,
+		-1.0, -1.0, 1.0,    0.5, 0.5, 1.0,
+		1.0, -1.0, 1.0,     0.5, 0.5, 1.0,
+		1.0, -1.0, -1.0,    0.5, 0.5, 1.0,
+	];
+
+	var boxIndices =
+	[
+		// Top
+		0, 1, 2,
+		0, 2, 3,
+
+		// Left
+		5, 4, 6,
+		6, 4, 7,
+
+		// Right
+		8, 9, 10,
+		8, 10, 11,
+
+		// Front
+		13, 12, 14,
+		15, 14, 12,
+
+		// Back
+		16, 17, 18,
+		16, 18, 19,
+
+		// Bottom
+		21, 20, 22,
+		22, 20, 23
+	];
 
 
-		var vert1 = [ Math.sin(radian_1) / 16, Math.cos(radian_1) / 8];
-		var vert2 = [Math.sin(radian_2) / 16, Math.cos(radian_2) / 8];
-		var vert3 = [0, 0];
-
-		circleVertices = circleVertices.concat(vert1);
-		circleVertices = circleVertices.concat(vert2);
-		circleVertices = circleVertices.concat(vert3);
-	}
 
 
 	//do some buffer setup
-	var circleVertexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, circleVertexBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(circleVertices), gl.STATIC_DRAW);
+	var boxVertexBufferObject = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, boxVertexBufferObject);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(boxVertices), gl.STATIC_DRAW);
+
+	var boxIndexBufferObject = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, boxIndexBufferObject);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(boxIndices), gl.STATIC_DRAW);
 
 	var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+
 	gl.vertexAttribPointer
 	(
 		positionAttribLocation,//Attribute Loaction
-		2, //Number of elements per attribute, since its a vec2, its 2
+		3, //Number of elements per attribute, since its a vec3, its 3
 		gl.FLOAT, //type of elements
 		gl.FALSE, //should the data be normalized
-		2 * Float32Array.BYTES_PER_ELEMENT, //size of an individual vertex
+		6 * Float32Array.BYTES_PER_ELEMENT, //size of an individual vertex
 		0 //offset in bytes of the first component in the vertex attribute array
 	);
 
+	var colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
+
+	gl.vertexAttribPointer
+	(
+		colorAttribLocation,//Attribute Loaction
+		3, //Number of elements per attribute, since its a vec3, its 3
+		gl.FLOAT, //type of elements
+		gl.FALSE, //should the data be normalized
+		6 * Float32Array.BYTES_PER_ELEMENT, //size of an individual vertex
+		3 * Float32Array.BYTES_PER_ELEMENT//offset in bytes of the first component in the vertex attribute array
+	);
+
+
+	gl.enableVertexAttribArray(positionAttribLocation);
+	gl.enableVertexAttribArray(colorAttribLocation);
+
+	// Tell OpenGL state machine which program should be active
+	gl.useProgram(program);
+
+	var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
+	var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+	var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+
+	var worldMatrix = new Float32Array(16);
+	var viewMatrix = new Float32Array(16);
+	var projMatrix = new Float32Array(16);
+
+	mat4.identity(worldMatrix);
+	mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
+	mat4.perspective(projMatrix, glMatrix.toRadian(45), 2, 0.1, 1000.0);
+
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
+
+
+	var xRotationMatrix = new Float32Array(16);
+	var yRotationMatrix = new Float32Array(16);
+
 
 	//draw buffer to the screen
-	gl.enableVertexAttribArray(positionAttribLocation);
-	gl.useProgram(program);
-	gl.drawArrays(gl.TRIANGLES, 0, circleVertices.length / 2);
+	var identityMatrix = new Float32Array(16);
+	mat4.identity(identityMatrix);
+	var time, angle;
+	var loop = function() {
+		time = performance.now() / 1000;
+		angle = time / 2 * Math.PI;
+
+		mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
+		mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
+		mat4.mul(worldMatrix, xRotationMatrix, yRotationMatrix);
+		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+
+
+		gl.clearColor(0.0, 0.0, 0.0, 1.0);
+		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+		gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+		requestAnimationFrame(loop);
+	};
+	requestAnimationFrame(loop);
+
 }
 
 function initShaderProgram(gl, vsSource, fsSource) {
