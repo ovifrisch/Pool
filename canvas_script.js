@@ -166,7 +166,7 @@ function main() {
 	var viewMatrix = new Float32Array(16);
 	var projMatrix = new Float32Array(16);
 
-	mat4.identity(worldMatrix);
+
 	mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
 	mat4.perspective(projMatrix, glMatrix.toRadian(45), 2, 0.1, 1000.0);
 
@@ -178,6 +178,8 @@ function main() {
 
 	var xRotationMatrix = new Float32Array(16);
 	var yRotationMatrix = new Float32Array(16);
+	var xTranslationMatrix = new Float32Array(16);
+	var interm_matrix = new Float32Array(16);
 
 
 	//draw buffer to the screen
@@ -186,11 +188,16 @@ function main() {
 	var time, angle;
 	var loop = function() {
 		time = performance.now() / 1000;
+		x_dist = (time*30 % 40) / 10;
 		angle = time / 2 * Math.PI;
 
+		
 		mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
 		mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
-		mat4.mul(worldMatrix, xRotationMatrix, yRotationMatrix);
+		mat4.translate(xTranslationMatrix, identityMatrix, [-x_dist, 0, 0]);
+
+		mat4.mul(interm_matrix, xRotationMatrix, yRotationMatrix);
+		mat4.mul(worldMatrix, xTranslationMatrix, interm_matrix);
 		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
 
@@ -200,8 +207,11 @@ function main() {
 		requestAnimationFrame(loop);
 	};
 	requestAnimationFrame(loop);
-
 }
+
+/*
+	so this thing 
+*/
 
 function initShaderProgram(gl, vsSource, fsSource) {
 	const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderText);
