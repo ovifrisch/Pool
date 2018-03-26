@@ -1,11 +1,12 @@
 #wrap1 {
 	margin:auto;
 	width: 840px;
+	height: 420px;
 	margin-top: 50px;
 	border: 2px solid red;
 }
 
 
 #pool_table {
-
+	background-color: black;
 }
