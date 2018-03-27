@@ -5,7 +5,8 @@ var white_ball, white_ball_mesh;
 var flat_red_ball;
 var table;
 var ball_radius = 20;
-var trans;
+var trans
+var accel = false;
 
 
 init();
@@ -100,8 +101,18 @@ function update_position_white() {
 		white_going_down = false;
 	}
 
-
-	trans += 0.01;
+	if (trans > 10) {
+		accel = false;
+	}
+	else if (trans < 0) {
+		accel = true;
+	}
+	if (accel) {
+		trans += 0.1;
+	}
+	else {
+		trans -= 0.1;
+	}
 
 	if (white_going_left) {
 		white_ball_mesh.translateOnAxis(new THREE.Vector3(1, 0, 0), -trans);
