@@ -115,17 +115,17 @@ function update_position_white() {
 	}
 
 	if (white_going_left) {
-		white_ball_mesh.translateOnAxis(new THREE.Vector3(1, 0, 0), -trans);
+		white_ball_mesh.position.x -= trans;
 	}
 	else {
-		white_ball_mesh.translateOnAxis(new THREE.Vector3(1, 0, 0), trans);
+		white_ball_mesh.position.x += trans;
 	}
 
 	if (white_going_down) {
-		white_ball_mesh.translateOnAxis(new THREE.Vector3(0, 1, 0), -trans);
+		white_ball_mesh.position.y -= trans;
 	}
 	else {
-		white_ball_mesh.translateOnAxis(new THREE.Vector3(0, 1, 0), trans);
+		white_ball_mesh.position.y += trans;
 	}
 }
 
