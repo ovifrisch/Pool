@@ -1,30 +1,65 @@
-var scene, camera, renderer;
+//Scene etc...
+var scene, camera, renderer, light;
+
+//table attributes
 var table_width, table_height;
-var light;
-var white_ball, white_ball_mesh;
-var flat_red_ball;
+
+//table
 var table;
+
+//ball attributes
 var ball_radius = 20;
-var trans
-var accel = false;
+
+//balls
+var cue_ball, red_ball;
 
 
-init();
+
+
+init_scene();
 init_table();
+create_balls();
+add_balls_to_scene();
 animate();
 
 function init_table() {
 	var geometry = new THREE.BoxGeometry( table_width, table_height, 0);
 	var material = new THREE.MeshPhongMaterial({color: "green"});
-	var mesh = new THREE.Mesh(geometry, material);
-	mesh.castShadow = true;
-	mesh.receiveShadow= true;
-	scene.add(mesh);
+	table = new THREE.Mesh(geometry, material);
+	table.castShadow = true;
+	table.receiveShadow= true;
+	scene.add(table);
+}
+
+function create_balls() {
+	var sphere_geometry = new THREE.SphereGeometry(ball_radius, 32, 32);
+
+
+	var cue_geometry = new THREE.BufferGeometry();
+	var red_geometry = new THREE.BufferGeometry();
+
+	cue_geometry.fromGeometry(sphere_geometry);
+	red_geometry.fromGeometry(sphere_geometry);
+
+	var cue_material = new THREE.MeshPhongMaterial( { color: 0xffffff } );
+	var red_material = new THREE.MeshPhongMaterial( { color: "red" } );
+
+	cue_ball = new THREE.Mesh(cue_geometry, cue_material);
+	red_ball = new THREE.Mesh(red_geometry, red_material);
+}
+
+function add_balls_to_scene() {
+	scene.add(cue_ball);
+	cue_ball.translateOnAxis(new THREE.Vector3(0, 0, 1), ball_radius);
+
+	scene.add(red_ball);
+	red_ball.translateOnAxis(new THREE.Vector3(0, 0, 1), ball_radius);
+	red_ball.translateOnAxis(new THREE.Vector3(1, 0, 0), 100);
+	scene.add(red_ball);
 }
 
 
-function init() {
-	trans = 1;
+function init_scene() {
 	table_width = $("#pool_table").width();
 	table_height = $("#pool_table").height();
 
@@ -37,45 +72,21 @@ function init() {
 	camera = new THREE.OrthographicCamera(table_width / - 2, table_width / 2, table_height / 2, table_height / - 2, -2*ball_radius, 10);
 	scene.add(camera);
 
-	//camera = new THREE.OrthographicCamera( table_width / - 2, table_width / 2, table_height / 2, table_height / - 2, ball_radius + 20, -ball_radius - 1);
 	renderer = new THREE.WebGLRenderer(gl, "mediump");
 	renderer.setSize(table_width, table_height);
-	//renderer.shadowMap.enabled = true;
 
 	var light1 = new THREE.DirectionalLight( 0xffffff, 1 );
 	light1.position.set( 0, 0, 100);
-	//light1.castShadow = true;
 	scene.add(light1);
-
-
-
-	var white_ball_geometry = new THREE.SphereGeometry( ball_radius, 32, 32 );
-	var material_white = new THREE.MeshPhongMaterial( { color: 0xffffff } );
-
-
-	var buffer_geometry = new THREE.BufferGeometry();
-	buffer_geometry.fromGeometry(white_ball_geometry);
-	white_ball_mesh = new THREE.Mesh( buffer_geometry, material_white );
-	// white_ball_mesh.castShadow = true;
-	// white_ball_mesh.receiveShadow = true;
-
-	white_ball_mesh.translateOnAxis(new THREE.Vector3(0, 0, 1), ball_radius);
-	scene.add(white_ball_mesh);
 }
 
 
-var transl_position = 1.0;
-var transl_acceleration = 0.001;
+var cue_going_left = false;
 
+function update_position_cue() {
 
-var white_going_left = false;
-var white_going_down = false;
-
-
-
-function update_position_white() {
 	var middle = new THREE.Vector3();
-	var geometry = white_ball_mesh.geometry;
+	var geometry = cue_ball.geometry;
 
 
 	geometry.computeBoundingBox();
@@ -83,56 +94,86 @@ function update_position_white() {
 	middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
 	middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
 	middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
-	white_ball_mesh.localToWorld(middle);
+
+	cue_ball.localToWorld(middle);
 
 	//change x direction
 	if (middle.x > table_width/2 - ball_radius) {
-		white_going_left = true;
+		cue_going_left = true;
 	}
 	else if (middle.x < -table_width/2 + ball_radius) {
-		white_going_left = false;
+		cue_going_left = false;
 	}
 
-	//change y direction
-	if (middle.y > table_height/2 - ball_radius){
-		white_going_down = true;
-	}
-	else if (middle.y < -table_height/2 + ball_radius) {
-		white_going_down = false;
-	}
 
-	if (trans > 10) {
-		accel = false;
-	}
-	else if (trans < 0) {
-		accel = true;
-	}
-	if (accel) {
-		trans += 0.1;
+	if (cue_going_left) {
+		cue_ball.position.x -= 2;
 	}
 	else {
-		trans -= 0.1;
+		cue_ball.position.x += 2;
+	}
+}
+
+var red_going_left = true;
+
+function update_position_red() {
+	var middle = new THREE.Vector3();
+	var geometry = red_ball.geometry;
+
+
+	geometry.computeBoundingBox();
+
+	middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
+	middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
+	middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
+
+	red_ball.localToWorld(middle);
+
+	//change x direction
+	if (middle.x > table_width/2 - ball_radius) {
+		red_going_left = true;
+	}
+	else if (middle.x < -table_width/2 + ball_radius) {
+		red_going_left = false;
 	}
 
-	if (white_going_left) {
-		white_ball_mesh.position.x -= trans;
+
+	if (red_going_left) {
+		red_ball.position.x -= 1;
 	}
 	else {
-		white_ball_mesh.position.x += trans;
+		red_ball.position.x += 1;
 	}
 
-	if (white_going_down) {
-		white_ball_mesh.position.y -= trans;
-	}
-	else {
-		white_ball_mesh.position.y += trans;
+}
+
+function detect_collision() {
+	var firstBB = new THREE.Box3().setFromObject(cue_ball);
+	var secondBB = new THREE.Box3().setFromObject(red_ball);
+	var collision = firstBB.intersectsBox(secondBB);
+
+	if (collision) {
+		if (red_going_left) {
+			red_going_left = false;
+		}
+		else if (!red_going_left) {
+			red_going_left = true;
+		}
+
+		if (cue_going_left) {
+			cue_going_left = false;
+		}
+		else if (!cue_going_left) {
+			cue_going_left = true;
+		}
 	}
 }
 
 
-
 function animate() {
 	renderer.render(scene, camera);
-	update_position_white();
+	detect_collision();
+	update_position_cue();
+	update_position_red();
 	requestAnimationFrame( animate );
 }
