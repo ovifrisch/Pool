@@ -1,255 +1,253 @@
-//Scene etc...
-var scene, camera, renderer, light;
-
-//table attributes
-var table_width, table_height;
 
 //table
 var table;
 
 //ball attributes
-var ball_radius = 20;
-
-//balls
-var cue_ball, red_ball;
-var cue_xvel = cue_yvel = 0;
-var red_xvel = red_yvel = 0;
+var ball_radius = 18;
 
 
+var game = {
+	table_width : 0,
+	table_height: 0,
+	table : null,
+	friction : 0.01,
+	ball_colors : [
+		'white', "yellow", "blue", "red",
+		"purple", "orange", "green", "brown",
+		"black", "#F5F777", "#7779F7",
+		"#F7777F", "#C377F7", "#F7BD77",
+		"#77F783", "#99445A"
+	],
+	scene : null,
+	camera : null,
+	renderer : null,
+	light : null
+};
 
-
-init_scene();
-init_table();
-create_balls();
-add_balls_to_scene();
+inititalize_game();
 animate();
 
+//inititalize_game();
+
+function inititalize_game() {
+	game.table_width = $("#pool_table").width();
+	game.table_height = $("#pool_table").height();
+
+	game.scene = new THREE.Scene();
+
+	//outward is negative here apparently
+	game.camera = new THREE.OrthographicCamera(game.table_width / - 2, game.table_width / 2, game.table_height / 2, game.table_height / - 2, -2*ball_radius, 10);
+	game.scene.add(game.camera);
+
+	game.renderer = new THREE.WebGLRenderer(document.querySelector("#pool_table").getContext("webgl"), "mediump");
+	game.renderer.setSize(game.table_width, game.table_height);
+
+	game.light = new THREE.DirectionalLight( 0xffffff, 1 );
+	game.light.position.set( 0, 0, 100);
+	game.scene.add(game.light);
+
+	set_table();
+	create_balls();
+	set_balls();
+}
+
 function click_hit() {
-	cue_xvel = 5;
+	balls[0].y_velocity += 10;
+	balls[0].x_velocity += 10;
 }
 
 function click_reset() {
-	cue_xvel = 0;
 }
 
-function init_table() {
-	var geometry = new THREE.BoxGeometry( table_width, table_height, 0);
+function set_table() {
+	var geometry = new THREE.BoxGeometry( game.table_width, game.table_height, 0);
 	var material = new THREE.MeshPhongMaterial({color: "green"});
-	table = new THREE.Mesh(geometry, material);
-	table.castShadow = true;
-	table.receiveShadow= true;
-	scene.add(table);
+	game.table = new THREE.Mesh(geometry, material);
+	game.table.castShadow = true;
+	game.table.receiveShadow= true;
+	game.scene.add(game.table);
 }
 
 function create_balls() {
+	// create a sphere geometry that each ball will copy into their buffer geometries
 	var sphere_geometry = new THREE.SphereGeometry(ball_radius, 32, 32);
 
-
-	var cue_geometry = new THREE.BufferGeometry();
-	var red_geometry = new THREE.BufferGeometry();
-
-	cue_geometry.fromGeometry(sphere_geometry);
-	cue_geometry.computeBoundingBox();
-	red_geometry.fromGeometry(sphere_geometry);
-	red_geometry.computeBoundingBox();
-
-	var cue_material = new THREE.MeshPhongMaterial( { color: 0xffffff } );
-	var red_material = new THREE.MeshPhongMaterial( { color: "red" } );
-
-	cue_ball = new THREE.Mesh(cue_geometry, cue_material);
-	red_ball = new THREE.Mesh(red_geometry, red_material);
+	//for each ball
+	var geometry, material;
+	for (var i = 0; i < balls.length; i++) {
+		geometry = new THREE.BufferGeometry();
+		geometry.fromGeometry(sphere_geometry);
+		geometry.computeBoundingBox();
+		material = new THREE.MeshPhongMaterial({ color: game.ball_colors[i]});
+		balls[i].mesh = new THREE.Mesh(geometry, material);
+	}
 }
 
-function add_balls_to_scene() {
-	scene.add(cue_ball);
-	cue_ball.translateOnAxis(new THREE.Vector3(0, 0, 1), ball_radius);
+function set_balls() {
+	for (var i = 0; i < balls.length; i++) {
+		balls[i].mesh.translateOnAxis(new THREE.Vector3(0, 0, 1), ball_radius);
+		balls[i].mesh.translateOnAxis(new THREE.Vector3(1, 0, 0), -370 + 50 * i);
+		balls[i].x_velocity = 0.0;
+		balls[i].y_velocity = 0.0;
+		game.scene.add(balls[i].mesh);
+	}
+}
 
-	scene.add(red_ball);
-	red_ball.translateOnAxis(new THREE.Vector3(0, 0, 1), ball_radius);
-	red_ball.translateOnAxis(new THREE.Vector3(1, 0, 0), 100);
-	scene.add(red_ball);
+function update_positions() {
+	for (var i = 0; i < balls.length; i++) {
+		balls[i].mesh.position.x += balls[i].x_velocity;
+		balls[i].mesh.position.y += balls[i].y_velocity;
+	}
+}
+
+function apply_friction() {
+	var friction_x;
+	var friction_y;
+
+	for (var i = 0; i < balls.length; i++) {
+		if (balls[i].x_velocity == 0) {
+			friction_x = 0;
+			if (balls[i].y_velocity >= 0) {
+				friction_y = game.friction;
+			}
+			else {
+				friction_y = -game.friction;
+			}
+		}
+		else if (balls[i].y_velocity == 0) {
+			game.friction.y = 0;
+			if (balls[i].x_velocity >= 0) {
+				friction_x = game.friction;
+			}
+			else {
+				friction_x = -game.friction;
+			}
+		}
+
+		else {
+			friction_x = game.friction*Math.cos(Math.atan(balls[i].y_velocity / balls[i].x_velocity));
+			friction_y = game.friction*Math.sin(Math.atan(balls[i].y_velocity / balls[i].x_velocity));
+		}
+
+		if (Math.abs(balls[i].x_velocity) <= Math.abs(friction_x)) {
+			balls[i].x_velocity = 0.0;
+		}
+
+		else {
+			balls[i].x_velocity -= friction_x;
+		}
+
+		if (Math.abs(balls[i].y_velocity) <= Math.abs(friction_y)) {
+			balls[i].y_velocity = 0.0;
+		}
+
+		else {
+			balls[i].y_velocity -= friction_y;
+		}
+	}
 }
 
 
-function init_scene() {
-	table_width = $("#pool_table").width();
-	table_height = $("#pool_table").height();
-
-	var canvas = document.querySelector("#pool_table");
-	var gl = canvas.getContext("webgl");
-
-	scene = new THREE.Scene();
-
-	//outward is negative here apparently
-	camera = new THREE.OrthographicCamera(table_width / - 2, table_width / 2, table_height / 2, table_height / - 2, -2*ball_radius, 10);
-	scene.add(camera);
-
-	renderer = new THREE.WebGLRenderer(gl, "mediump");
-	renderer.setSize(table_width, table_height);
-
-	var light1 = new THREE.DirectionalLight( 0xffffff, 1 );
-	light1.position.set( 0, 0, 100);
-	scene.add(light1);
-}
-
-
-var cue_going_left = false;
-
-function update_position_cue() {
-
+function check_wall_collisions() {
 	var middle = new THREE.Vector3();
-	var geometry = cue_ball.geometry;
+	for (var i = 0; i < balls.length; i++) {
+		middle = get_middle(balls[i]);
 
+		if (middle.x > game.table_width/2 - ball_radius || middle.x < -game.table_width/2 + ball_radius) {
+			balls[i].x_velocity = -(balls[i].x_velocity);
+		}
 
-	middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
-	middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
-	middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
-
-	cue_ball.localToWorld(middle);
-
-	//change x direction
-	if (middle.x > table_width/2 - ball_radius) {
-		cue_going_left = true;
-	}
-	else if (middle.x < -table_width/2 + ball_radius) {
-		cue_going_left = false;
-	}
-
-
-	if (cue_going_left) {
-		cue_ball.position.x -= cue_xvel;
-	}
-	else {
-		cue_ball.position.x += cue_xvel;
+		if (middle.y > game.table_height/2 - ball_radius || middle.y < -game.table_height/2 + ball_radius) {
+			balls[i].y_velocity = -(balls[i].y_velocity);
+		}
 	}
 }
 
-var red_going_left = true;
-
-function update_position_red() {
+function get_middle(ball) {
 	var middle = new THREE.Vector3();
-	var geometry = red_ball.geometry;
+	middle.x = (ball.mesh.geometry.boundingBox.min.x + ball.mesh.geometry.boundingBox.max.x) / 2;
+	middle.y = (ball.mesh.geometry.boundingBox.min.y + ball.mesh.geometry.boundingBox.max.y) / 2;
+	middle.z = (ball.mesh.geometry.boundingBox.min.z + ball.mesh.geometry.boundingBox.max.z) / 2;
 
-
-	geometry.computeBoundingBox();
-
-	middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
-	middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
-	middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
-
-	red_ball.localToWorld(middle);
-
-	//change x direction
-	if (middle.x > table_width/2 - ball_radius) {
-		red_going_left = true;
-	}
-	else if (middle.x < -table_width/2 + ball_radius) {
-		red_going_left = false;
-	}
-
-
-	if (red_going_left) {
-		red_ball.position.x -= red_xvel;
-	}
-	else {
-		red_ball.position.x += red_xvel;
-	}
-
+	ball.mesh.localToWorld(middle);
+	return middle;
 }
 
-
-/*
-	Ball:
-		Velocity
-		position
-
-
-	Game:
-
-
-*/
-
-function detect_ball_collision(i, j) {
-	var middle_i = new THREE.Vector3();
-	middle_i.x = (red_ball.geometry.boundingBox.max.x + red_ball.geometry.boundingBox.min.x) / 2;
-	middle_i.y = (red_ball.geometry.boundingBox.max.y + red_ball.geometry.boundingBox.min.y) / 2;
-	middle_i.z = (red_ball.geometry.boundingBox.max.z + red_ball.geometry.boundingBox.min.z) / 2;
-
-	red_ball.localToWorld(middle_i);
-
-	var middle_j = new THREE.Vector3();
-	middle_j.x = (cue_ball.geometry.boundingBox.max.x + cue_ball.geometry.boundingBox.min.x) / 2;
-	middle_j.y = (cue_ball.geometry.boundingBox.max.y + cue_ball.geometry.boundingBox.min.y) / 2;
-	middle_j.z = (cue_ball.geometry.boundingBox.max.z + cue_ball.geometry.boundingBox.min.z) / 2;
-
-	cue_ball.localToWorld(middle_j);
-
-	var dx = middle_i.x - middle_j.x;
-	var dy = middle_i.y - middle_j.y;
-
-	var dist = Math.sqrt(dx*dx + dy*dy);
-
-	if (dist <= 2 * ball_radius) { //collision
-		console.log("hi");
-		if (red_going_left) {
-			red_going_left = false;
-		}
-		else if (!red_going_left) {
-			red_going_left = true;
-		}
-
-		if (cue_going_left) {
-			cue_going_left = false;
-		}
-		else if (!cue_going_left) {
-			cue_going_left = true;
-		}
-
+function find_angle(vx, vy) {
+	var t;
+	if (vx < 0) {
+		return Math.PI + Math.atan(vy/vx);
+	}
+	else if (vx > 0) {
+		return Math.atan(vy/vx);
 	}
 
-
+	else { // vx == 0
+		if (vy == 0) {
+			return 0;
+		}
+		else if (vy > 0) {
+			return Math.PI / 2;
+		}
+		else { //vy < 0
+			return (3/2) * Math.PI;
+		}
+	}
 }
 
+function check_ball_collisions() {
+	var i_middle, j_middle;
+	var dx, dy, dist;
+	var phi;
+	var i_total, j_total, i_ang, j_ang;
+	var i_vxr, i_vyr, j_vxr, j_vyr;
 
-function detect_collision() {
+	for (var i = 0; i < balls.length; i++) {
+		for (var j = i + 1; j < balls.length; j++) {
+			i_middle = get_middle(balls[i]);
+			j_middle = get_middle(balls[j]);
 
-	var i, j;
-	num_balls = 2;
-	for (i = 0; i < num_balls; i++) {
-		for (j = num_balls + 1; j < num_balls; j++) {
-			detect_ball_collision(i, j);
+			dx = i_middle.x - j_middle.x;
+			dy = i_middle.y - j_middle.y;
+
+			dist = Math.sqrt(dx*dx + dy*dy);
+
+			if (dist <= 2 * ball_radius) { //BOING
+
+				if (dx == 0.0)
+					phi = Math.PI/2.0;
+				else
+					phi = Math.atan(dy/dx);
+
+				i_total = Math.sqrt(balls[i].x_velocity*balls[i].x_velocity + balls[i].y_velocity*balls[i].y_velocity);
+				j_total = Math.sqrt(balls[j].x_velocity*balls[j].x_velocity + balls[j].y_velocity*balls[j].y_velocity);
+
+				i_ang = find_angle(balls[i].x_velocity, balls[i].y_velocity);
+				j_ang = find_angle(balls[j].x_velocity, balls[j].y_velocity);
+
+				i_vxr = i_total * Math.cos(i_ang - phi);
+				i_vyr = i_total * Math.sin(i_ang - phi);
+				j_vxr = j_total * Math.cos(j_ang - phi);
+				j_vyr = j_total * Math.sin(j_ang - phi);
+
+
+				balls[i].x_velocity = Math.cos(phi)*j_vxr + Math.cos(phi+Math.PI/2)*i_vyr;
+				balls[i].y_velocity = Math.sin(phi)*j_vxr + Math.sin(phi+Math.PI/2)*i_vyr;
+				balls[j].x_velocity = Math.cos(phi)*i_vxr + Math.cos(phi+Math.PI/2)*j_vyr;
+				balls[j].y_velocity = Math.sin(phi)*i_vxr + Math.sin(phi+Math.PI/2)*j_vyr;
+			}
 		}
 	}
-
-
-
-	// var firstBB = new THREE.Box3().setFromObject(cue_ball);
-	// var secondBB = new THREE.Box3().setFromObject(red_ball);
-	// var collision = firstBB.intersectsBox(secondBB);
-
-	// if (collision) {
-	// 	// if (red_going_left) {
-	// 	// 	red_going_left = false;
-	// 	// }
-	// 	// else if (!red_going_left) {
-	// 	// 	red_going_left = true;
-	// 	// }
-
-	// 	// if (cue_going_left) {
-	// 	// 	cue_going_left = false;
-	// 	// }
-	// 	// else if (!cue_going_left) {
-	// 	// 	cue_going_left = true;
-	// 	// }
-	// 	return true;
-	// }
 }
 
 
 function animate() {
-	renderer.render(scene, camera);
-	detect_ball_collision(0, 0);
- 	update_position_cue();
-	update_position_red();
+	game.renderer.render(game.scene, game.camera);
+	check_wall_collisions();
+	//console.log(balls[0].y_velocity);
+	check_ball_collisions();
+	apply_friction();
+	//console.log(balls[0].y_velocity);
+	update_positions();
 	requestAnimationFrame( animate );
 }
