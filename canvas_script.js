@@ -12,6 +12,8 @@ var ball_radius = 20;
 
 //balls
 var cue_ball, red_ball;
+var cue_xvel = cue_yvel = 0;
+var red_xvel = red_yvel = 0;
 
 
 
@@ -21,6 +23,14 @@ init_table();
 create_balls();
 add_balls_to_scene();
 animate();
+
+function click_hit() {
+	cue_xvel = 5;
+}
+
+function click_reset() {
+	cue_xvel = 0;
+}
 
 function init_table() {
 	var geometry = new THREE.BoxGeometry( table_width, table_height, 0);
@@ -39,7 +49,9 @@ function create_balls() {
 	var red_geometry = new THREE.BufferGeometry();
 
 	cue_geometry.fromGeometry(sphere_geometry);
+	cue_geometry.computeBoundingBox();
 	red_geometry.fromGeometry(sphere_geometry);
+	red_geometry.computeBoundingBox();
 
 	var cue_material = new THREE.MeshPhongMaterial( { color: 0xffffff } );
 	var red_material = new THREE.MeshPhongMaterial( { color: "red" } );
@@ -89,8 +101,6 @@ function update_position_cue() {
 	var geometry = cue_ball.geometry;
 
 
-	geometry.computeBoundingBox();
-
 	middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
 	middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
 	middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
@@ -107,10 +117,10 @@ function update_position_cue() {
 
 
 	if (cue_going_left) {
-		cue_ball.position.x -= 2;
+		cue_ball.position.x -= cue_xvel;
 	}
 	else {
-		cue_ball.position.x += 2;
+		cue_ball.position.x += cue_xvel;
 	}
 }
 
@@ -139,20 +149,48 @@ function update_position_red() {
 
 
 	if (red_going_left) {
-		red_ball.position.x -= 1;
+		red_ball.position.x -= red_xvel;
 	}
 	else {
-		red_ball.position.x += 1;
+		red_ball.position.x += red_xvel;
 	}
 
 }
 
-function detect_collision() {
-	var firstBB = new THREE.Box3().setFromObject(cue_ball);
-	var secondBB = new THREE.Box3().setFromObject(red_ball);
-	var collision = firstBB.intersectsBox(secondBB);
 
-	if (collision) {
+/*
+	Ball:
+		Velocity
+		position
+
+
+	Game:
+
+
+*/
+
+function detect_ball_collision(i, j) {
+	var middle_i = new THREE.Vector3();
+	middle_i.x = (red_ball.geometry.boundingBox.max.x + red_ball.geometry.boundingBox.min.x) / 2;
+	middle_i.y = (red_ball.geometry.boundingBox.max.y + red_ball.geometry.boundingBox.min.y) / 2;
+	middle_i.z = (red_ball.geometry.boundingBox.max.z + red_ball.geometry.boundingBox.min.z) / 2;
+
+	red_ball.localToWorld(middle_i);
+
+	var middle_j = new THREE.Vector3();
+	middle_j.x = (cue_ball.geometry.boundingBox.max.x + cue_ball.geometry.boundingBox.min.x) / 2;
+	middle_j.y = (cue_ball.geometry.boundingBox.max.y + cue_ball.geometry.boundingBox.min.y) / 2;
+	middle_j.z = (cue_ball.geometry.boundingBox.max.z + cue_ball.geometry.boundingBox.min.z) / 2;
+
+	cue_ball.localToWorld(middle_j);
+
+	var dx = middle_i.x - middle_j.x;
+	var dy = middle_i.y - middle_j.y;
+
+	var dist = Math.sqrt(dx*dx + dy*dy);
+
+	if (dist <= 2 * ball_radius) { //collision
+		console.log("hi");
 		if (red_going_left) {
 			red_going_left = false;
 		}
@@ -166,14 +204,52 @@ function detect_collision() {
 		else if (!cue_going_left) {
 			cue_going_left = true;
 		}
+
 	}
+
+
+}
+
+
+function detect_collision() {
+
+	var i, j;
+	num_balls = 2;
+	for (i = 0; i < num_balls; i++) {
+		for (j = num_balls + 1; j < num_balls; j++) {
+			detect_ball_collision(i, j);
+		}
+	}
+
+
+
+	// var firstBB = new THREE.Box3().setFromObject(cue_ball);
+	// var secondBB = new THREE.Box3().setFromObject(red_ball);
+	// var collision = firstBB.intersectsBox(secondBB);
+
+	// if (collision) {
+	// 	// if (red_going_left) {
+	// 	// 	red_going_left = false;
+	// 	// }
+	// 	// else if (!red_going_left) {
+	// 	// 	red_going_left = true;
+	// 	// }
+
+	// 	// if (cue_going_left) {
+	// 	// 	cue_going_left = false;
+	// 	// }
+	// 	// else if (!cue_going_left) {
+	// 	// 	cue_going_left = true;
+	// 	// }
+	// 	return true;
+	// }
 }
 
 
 function animate() {
 	renderer.render(scene, camera);
-	detect_collision();
-	update_position_cue();
+	detect_ball_collision(0, 0);
+ 	update_position_cue();
 	update_position_red();
 	requestAnimationFrame( animate );
 }
