@@ -52,8 +52,8 @@ function inititalize_game() {
 }
 
 function click_hit() {
-	balls[0].y_velocity += 10;
 	balls[0].x_velocity += 10;
+	//balls[0].y_velocity += 10;
 }
 
 function click_reset() {
@@ -105,6 +105,7 @@ function apply_friction() {
 	var friction_y;
 
 	for (var i = 0; i < balls.length; i++) {
+
 		if (balls[i].x_velocity == 0) {
 			friction_x = 0;
 			if (balls[i].y_velocity >= 0) {
@@ -115,7 +116,7 @@ function apply_friction() {
 			}
 		}
 		else if (balls[i].y_velocity == 0) {
-			game.friction.y = 0;
+			friction_y = 0;
 			if (balls[i].x_velocity >= 0) {
 				friction_x = game.friction;
 			}
@@ -125,24 +126,34 @@ function apply_friction() {
 		}
 
 		else {
-			friction_x = game.friction*Math.cos(Math.atan(balls[i].y_velocity / balls[i].x_velocity));
-			friction_y = game.friction*Math.sin(Math.atan(balls[i].y_velocity / balls[i].x_velocity));
+			friction_x = Math.abs(game.friction*Math.cos(Math.atan(balls[i].y_velocity / balls[i].x_velocity)));
+			friction_y = Math.abs(game.friction*Math.sin(Math.atan(balls[i].y_velocity / balls[i].x_velocity)));
 		}
 
-		if (Math.abs(balls[i].x_velocity) <= Math.abs(friction_x)) {
+		if (Math.abs(balls[i].x_velocity) <= friction_x) {
 			balls[i].x_velocity = 0.0;
 		}
 
 		else {
-			balls[i].x_velocity -= friction_x;
+			if (balls[i].x_velocity > 0) {
+				balls[i].x_velocity -= friction_x;
+			}
+			else {
+				balls[i].x_velocity += friction_x;
+			}
 		}
 
-		if (Math.abs(balls[i].y_velocity) <= Math.abs(friction_y)) {
+		if (Math.abs(balls[i].y_velocity) <=friction_y) {
 			balls[i].y_velocity = 0.0;
 		}
 
 		else {
-			balls[i].y_velocity -= friction_y;
+			if (balls[i].y_velocity > 0) {
+				balls[i].y_velocity -= friction_y;
+			}
+			else {
+				balls[i].y_velocity += friction_y;
+			}
 		}
 	}
 }
@@ -244,10 +255,8 @@ function check_ball_collisions() {
 function animate() {
 	game.renderer.render(game.scene, game.camera);
 	check_wall_collisions();
-	//console.log(balls[0].y_velocity);
 	check_ball_collisions();
 	apply_friction();
-	//console.log(balls[0].y_velocity);
 	update_positions();
 	requestAnimationFrame( animate );
 }
