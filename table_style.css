@@ -13,3 +13,26 @@ body {
 #pool_table {
 	background-color: transparent;
 }
+
+#hit {
+	position: relative;
+	top: -300px;
+}
+
+#start {
+	position: relative;
+	left: -35px;
+	top: -220px;
+}
+
+#stop {
+	position: relative;
+	left: -80px;
+	top: -282px;
+}
+
+#advance {
+	position: relative;
+	left: -125px;
+	top: -100px;
+}

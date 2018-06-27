@@ -1,21 +1,24 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="table_style.css">
-		<script type="text/javascript" src="balls.js"></script>
-		<script type="text/javascript" src="js/gl-matrix.js"></script>
-		<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
-		<script type="text/javascript" src="js/three.js"></script>
+		
+		<script type="text/javascript" src="lib/gl-matrix.js"></script>
+		<script type="text/javascript" src="lib/jquery-3.3.1.js"></script>
+		<script type="text/javascript" src="lib/three.js"></script>
+		<script type="text/javascript" src="lib/OrbitControls.js"></script>
 
 	</head>
 	<body>
 		<div class="wrapper" id="wrap1">
 			<canvas id="pool_table" width="840" height="420">
 			</canvas>
-			<button onclick="click_hit()">hit</button>
-			<button onclick="click_reset()">reset</button>
-			<button onclick="click_pause()">pause</button>
+
 		</div>
 	</body>
+	<script type="text/javascript" src="balls.js"></script>
+	<script type="text/javascript" src="collision_helpers.js"></script>
+	<script type="text/javascript" src="collision.js"></script>
 	<script type="text/javascript" src="canvas_script.js"></script>
+
 	<!-- <script type="text/javascript" src="collision_handling.js"></script> -->
 </html>
