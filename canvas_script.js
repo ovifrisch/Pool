@@ -56,7 +56,7 @@ function inititalize_scene() {
 }
 
 function click_hit() {
-	balls[0].x_velocity = 8;
+	balls[0].x_velocity = 20;
 }
 
 function click_stop() {
