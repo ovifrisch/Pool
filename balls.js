@@ -51,7 +51,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (2*ball_radius),
+		start_x : 150 + (2*ball_radius) + 5,
 		start_y: 0.0 + ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -65,7 +65,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (2*ball_radius),
+		start_x : 150 + (2*ball_radius) + 5,
 		start_y: 0 - ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -79,7 +79,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (4*ball_radius),
+		start_x : 150 + (4*ball_radius)  + 5,
 		start_y: 0 + 2*ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -93,7 +93,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (4*ball_radius),
+		start_x : 150 + (4*ball_radius)  + 5,
 		start_y: 0,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -107,7 +107,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (4*ball_radius),
+		start_x : 150 + (4*ball_radius)  + 5,
 		start_y: 0 - 2*ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -121,7 +121,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (6*ball_radius),
+		start_x : 150 + (6*ball_radius)  + 5,
 		start_y: 0 + 3*ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -135,7 +135,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (6*ball_radius),
+		start_x : 150 + (6*ball_radius)  + 5,
 		start_y: 0 + ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -149,7 +149,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (6*ball_radius),
+		start_x : 150 + (6*ball_radius) + 5,
 		start_y: 0 - ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -163,7 +163,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (6*ball_radius),
+		start_x : 150 + (6*ball_radius) + 5,
 		start_y: 0 - 3*ball_radius,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -177,7 +177,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (8*ball_radius),
+		start_x : 150 + (8*ball_radius) + 5,
 		start_y: 0 + (4*ball_radius),
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -191,7 +191,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (8*ball_radius),
+		start_x : 150 + (8*ball_radius) + 5,
 		start_y: 0 + (2*ball_radius),
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -205,7 +205,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (8*ball_radius),
+		start_x : 150 + (8*ball_radius + 5),
 		start_y: 0,
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -219,7 +219,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (8*ball_radius),
+		start_x : 150 + (8*ball_radius + 5),
 		start_y: 0 - (2*ball_radius),
 		x_velocity : 0.0,
 		y_velocity : 0.0,
@@ -233,7 +233,7 @@ var balls = [
 
 	{
 		mesh : null,
-		start_x : 150 + (8*ball_radius),
+		start_x : 150 + (8*ball_radius + 5),
 		start_y: 0 - (4*ball_radius),
 		x_velocity : 0.0,
 		y_velocity : 0.0,
