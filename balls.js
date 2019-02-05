@@ -77,174 +77,171 @@ var balls = [
 		color: "red"
 	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (4*ball_radius)  + 5,
-	// 	start_y: 0 + 2*ball_radius,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "purple"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (4*ball_radius)  + 5,
+		start_y: 0 + 2*ball_radius,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "purple"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (4*ball_radius)  + 5,
-	// 	start_y: 0,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "black"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (4*ball_radius)  + 5,
+		start_y: 0,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "black"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (4*ball_radius)  + 5,
-	// 	start_y: 0 - 2*ball_radius,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "green"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (4*ball_radius)  + 5,
+		start_y: 0 - 2*ball_radius,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "green"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (6*ball_radius)  + 5,
-	// 	start_y: 0 + 3*ball_radius,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "brown"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (6*ball_radius)  + 5,
+		start_y: 0 + 3*ball_radius,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "brown"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (6*ball_radius)  + 5,
-	// 	start_y: 0 + ball_radius,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "orange"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (6*ball_radius)  + 5,
+		start_y: 0 + ball_radius,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "orange"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (6*ball_radius) + 5,
-	// 	start_y: 0 - ball_radius,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "stripe yellow"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (6*ball_radius) + 5,
+		start_y: 0 - ball_radius,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "stripe yellow"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (6*ball_radius) + 5,
-	// 	start_y: 0 - 3*ball_radius,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "stripe blue"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (6*ball_radius) + 5,
+		start_y: 0 - 3*ball_radius,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "stripe blue"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (8*ball_radius) + 5,
-	// 	start_y: 0 + (4*ball_radius),
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "stripe red"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (8*ball_radius) + 5,
+		start_y: 0 + (4*ball_radius),
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "stripe red"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (8*ball_radius) + 5,
-	// 	start_y: 0 + (2*ball_radius),
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "stripe purple"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (8*ball_radius) + 5,
+		start_y: 0 + (2*ball_radius),
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "stripe purple"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (8*ball_radius + 5),
-	// 	start_y: 0,
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "stripe orange"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (8*ball_radius + 5),
+		start_y: 0,
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "stripe orange"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (8*ball_radius + 5),
-	// 	start_y: 0 - (2*ball_radius),
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "stripe green"
-	// },
+	{
+		mesh : null,
+		start_x : 150 + (8*ball_radius + 5),
+		start_y: 0 - (2*ball_radius),
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "stripe green"
+	},
 
-	// {
-	// 	mesh : null,
-	// 	start_x : 150 + (8*ball_radius + 5),
-	// 	start_y: 0 - (4*ball_radius),
-	// 	x_velocity : 0.0,
-	// 	y_velocity : 0.0,
-	// 	ball_collisions : [],
-	// 	left_wall : false,
-	// 	right_wall: false,
-	// 	top_wall: false,
-	// 	bottom_wall: false,
-	// 	color: "stripe brown"
-	// }
+	{
+		mesh : null,
+		start_x : 150 + (8*ball_radius + 5),
+		start_y: 0 - (4*ball_radius),
+		x_velocity : 0.0,
+		y_velocity : 0.0,
+		ball_collisions : [],
+		left_wall : false,
+		right_wall: false,
+		top_wall: false,
+		bottom_wall: false,
+		color: "stripe brown"
+	}
 ];
-
-
-
